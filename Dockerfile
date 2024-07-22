@@ -1,22 +1,22 @@
-FROM ruby:2.4.10-slim-buster
+FROM ruby:2.6.6-slim-buster
 
-RUN apt-get update -qq
-RUN apt-get install -y \
+ENV APP_PATH /app
+ENV BUNDLE_PATH /box
+
+RUN apt-get update -qq && apt-get install -y \
     build-essential \
-    libpq-dev nodejs \
-    npm \
+    libpq-dev \
+    curl \
     git \
     shared-mime-info
+
+# Instalar Node.js 14.x
+RUN curl -sL https://deb.nodesource.com/setup_14.x | bash - && \
+    apt-get install -y nodejs
+
 RUN npm i -g yarn
+RUN gem update --system 3.3.22
+RUN mkdir $APP_PATH
 
-ENV app /app
+WORKDIR $APP_PATH
 
-RUN mkdir $app
-
-WORKDIR $app
-
-RUN gem install bundler:1.17.3
-
-COPY Gemfile Gemfile.lock /app/
-
-ENV BUNDLE_PATH /box
